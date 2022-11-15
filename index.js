@@ -4,9 +4,10 @@
 let pixelRatio = Math.min(window.devicePixelRatio, 1.5);
 const regl = require("regl")({
   pixelRatio,
-  // extensions: ["OES_texture_float"],
+  extensions: ["OES_texture_float"],
   optionalExtensions: [
-    // "oes_texture_float_linear"
+    // "oes_texture_float_linear",
+    // "WEBGL_color_buffer_float"
     // "WEBGL_debug_renderer_info",
     // "WEBGL_debug_shaders"
   ],
@@ -81,6 +82,8 @@ function popState() {
     width: gl.drawingBufferWidth,
     height: gl.drawingBufferHeight,
     data: stored_pixels,
+    // format: 'rgba32f',
+    colorType:'float'
   });
   doPop = true;
 }
@@ -102,8 +105,14 @@ shaders.on("change", () => {
 });
 
 function createDoubleFBO() {
-  let fbo1 = regl.framebuffer();
-  let fbo2 = regl.framebuffer();
+  let fbo1 = regl.framebuffer({  
+    // format: 'rgba32f',
+  colorType: 'float'
+});
+  let fbo2 = regl.framebuffer({
+    // format: 'rgba32f',
+    colorType: 'float'
+  });
 
   return {
     resize(w, h) {
@@ -187,9 +196,13 @@ let drawTriangle = regl({
 });
 
 regl.frame(function ({ viewportWidth, viewportHeight }) {
-  densityDoubleFBO.resize(viewportWidth, viewportHeight);
-  _viewportWidth = viewportWidth;
-  _viewportHeight = viewportHeight;
+  let w = viewportWidth;
+  let h = viewportHeight;
+  // w = 512;
+  // h = 288;
+  densityDoubleFBO.resize(w, h);
+  _viewportWidth = w;
+  _viewportHeight = h;
   do {
     pointers.forEach((pointer) => {
       if (!pointer.down) {
@@ -201,7 +214,7 @@ regl.frame(function ({ viewportWidth, viewportHeight }) {
         pointer,
         force: pointer.force || 0.5,
         pop: false,
-        value: pointer.value || 0,
+        value: 1,
       });
       pointer.prevTexcoordX = pointer.texcoordX;
       pointer.prevTexcoordY = pointer.texcoordY;
@@ -213,7 +226,7 @@ regl.frame(function ({ viewportWidth, viewportHeight }) {
     pointer: offscreenPointer,
     force: 0.0,
     pop: doPop,
-    value: 1,
+    value: 0,
   });
   doPop = false;
   if (undoStack.length == 0) {
