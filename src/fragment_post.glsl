@@ -9,10 +9,6 @@ uniform vec2 resolution;
 #define R int(0)
 
 // clang-format off
-// #pragma glslify: dither = require(glsl-dither)
-// #pragma glslify: dither = require(glsl-dither/8x8)
-// #pragma glslify: dither = require(glsl-dither/4x4)
-#pragma glslify: dither = require(glsl-dither/2x2)
 // clang-format on
 const float PHI = 1.61803398874989484820459; // Φ = Golden Ratio 
 
@@ -116,24 +112,7 @@ vec3 noise = vec3(gold_noise(xy, fract(time * f0)+1.0), // r
                 gold_noise(xy, fract(time * f0)+3.0));
 
 
-// vec3 noise0 = vec3(gold_noise(xy, 1.0), // r
-//                   gold_noise(xy, 2.0), // g
-//                   gold_noise(xy, 3.0));
 
-
-  // vec3 cout = c + vec3(0.0, 0.0, 0.3) * clr.x;
-  // vec3 fout = f + vec3(0.0, 0.0, 0.3) * clr.x;
-  // gl_FragColor = vec4(cout, 1.0);
   gl_FragColor = vec4(noise, 1.);
-  // gl_FragColor = clr;
-  // gl_FragColor = vec4(r.x, r.y, r.y, 1.0);
-  // gl_FragColor = vec4(fout, 1.0);
-  // gl_FragColor = vec4(vec3(clr.x), 1.0);
-}
-// void main() {
-//   vec4 color = texture2D(tex, uv);
 
-//   // gl_FragColor = vec4(1.0, 0., 1.0, 1.0);
-//   gl_FragColor = dither(gl_FragCoord.xy, color);
-//   // gl_FragColor = color;
-// }
+}
