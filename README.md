@@ -1,3 +1,1 @@
-# webgl drawing pad experiment
-
-with thanks to joshua horowitz & dcerisano on shadertoy
+https://arxiv.org/abs/2111.13545

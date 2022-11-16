@@ -1,16 +1,9 @@
-// courtesy to PavelDoGreat/WebGL-Fluid-Simulation.
 let undo = document.getElementById("undo");
-function setupHandlers(
-  canvas,
-  pixelRatio,
-  pushState,
-  popState,
-  getColorAtPoint
-) {
+function setupHandlers(canvas, pixelRatio, pushState, popState) {
   undo.addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
-    popState();
+    // popState();
   });
   undo.addEventListener("mouseup", (e) => {
     e.stopPropagation();
@@ -25,35 +18,35 @@ function setupHandlers(
 
   function pointerPrototype() {
     this.id = -1;
-    this.texcoordX = 0;
-    this.texcoordY = 0;
-    this.prevTexcoordX = 0;
-    this.prevTexcoordY = 0;
+    this.x = 0;
+    this.y = 0;
+    this.prevX = 0;
+    this.prevY = 0;
     this.deltaX = 0;
     this.deltaY = 0;
     this.down = false;
     this.moved = false;
     this.color = [30, 0, 300];
     this.force = 0.5;
-    this.value = 1;
+    this.value =1;
     this.missed = 0;
   }
   let pointers = [];
   let eventQueue = [];
   pointers.push(new pointerPrototype());
 
-  function updatePointerDownData(pointer, id, posX, posY, value, force = 0.5) {
+  function updatePointerDownData(pointer, id, posX, posY, force = 0.5) {
     pointer.id = id;
     pointer.down = true;
     pointer.moved = false;
-    pointer.texcoordX = posX / canvas.width;
-    pointer.texcoordY = 1.0 - posY / canvas.height;
-    pointer.prevTexcoordX = pointer.texcoordX;
-    pointer.prevTexcoordY = pointer.texcoordY;
-    pointer.deltaX = 0;
-    pointer.deltaY = 0;
+    pointer.x = posX; // canvas.width;
+    pointer.y = posY; // canvas.height;
+    pointer.prevX = pointer.x;
+    pointer.prevY = pointer.y;
+    // pointer.deltaX = 0;
+    // pointer.deltaY = 0;
     pointer.force = force;
-    pointer.value = value;
+    pointer.value = 1.0;
     //   pointer.color = generateColor();
   }
 
@@ -74,37 +67,32 @@ function setupHandlers(
 
   function updatePointerMoveData({ pointerId, posX, posY, force = 0.5 }) {
     let pointer = pointers.find((p) => p.id == pointerId);
-    // pointer.prevTexcoordX = pointer.texcoordX;
-    // pointer.prevTexcoordY = pointer.texcoordY;
-    pointer.texcoordX = posX / canvas.width;
-    pointer.texcoordY = 1.0 - posY / canvas.height;
-    // pointer.deltaX = correctDeltaX(pointer.texcoordX - pointer.prevTexcoordX);
-    // pointer.deltaY = correctDeltaY(pointer.texcoordY - pointer.prevTexcoordY);
+    pointer.x = posX;
+    pointer.y = posY;
+    // pointer.deltaX = pointer.x - pointer.prevX;
+    // pointer.deltaY = pointer.y - pointer.prevY;
     pointer.moved =
       Math.abs(pointer.deltaX) > 0 || Math.abs(pointer.deltaY) > 0;
     pointer.force = force;
   }
 
-  function correctDeltaX(delta) {
-    let aspectRatio = canvas.width / canvas.height;
-    if (aspectRatio < 1) delta *= aspectRatio;
-    return delta;
-  }
+  // function correctDeltaX(delta) {
+  //   let aspectRatio = canvas.width / canvas.height;
+  //   if (aspectRatio < 1) delta *= aspectRatio;
+  //   return delta;
+  // }
 
-  function correctDeltaY(delta) {
-    let aspectRatio = canvas.width / canvas.height;
-    if (aspectRatio > 1) delta /= aspectRatio;
-    return delta;
-  }
+  // function correctDeltaY(delta) {
+  //   let aspectRatio = canvas.width / canvas.height;
+  //   if (aspectRatio > 1) delta /= aspectRatio;
+  //   return delta;
+  // }
   canvas.addEventListener("mousedown", (e) => {
     let posX = scaleByPixelRatio(e.offsetX);
     let posY = scaleByPixelRatio(e.offsetY);
     let pointer = pointers.find((p) => p.id == -1);
     if (pointer == null) pointer = new pointerPrototype();
-
-    let value = getColorAtPoint(posX, posY);
-
-    updatePointerDownData(pointer, -1, posX, posY, value);
+    updatePointerDownData(pointer, -1, posX, posY, 1.0);
   });
 
   canvas.addEventListener("mousemove", (e) => {
@@ -117,7 +105,7 @@ function setupHandlers(
 
   window.addEventListener("mouseup", () => {
     updatePointerUpData(pointers[0]);
-    pushState();
+    // pushState();
   });
 
   canvas.addEventListener("touchstart", (e) => {
@@ -129,14 +117,12 @@ function setupHandlers(
       let posX = scaleByPixelRatio(touches[i].pageX);
       let posY = scaleByPixelRatio(touches[i].pageY);
       // console.log(touches[i].force);
-      let value = getColorAtPoint(posX, posY);
-
       updatePointerDownData(
         pointers[i + 1],
         touches[i].identifier,
         posX,
         posY,
-        value,
+        1.0,
         touches[i].force || 0.01
       );
     }
@@ -172,7 +158,7 @@ function setupHandlers(
 
     if (nDown == 0) {
       console.log("touchend");
-      pushState();
+      // pushState();
     }
   });
 

@@ -1,7 +1,12 @@
 // const { setupOverlay } = require("regl-shader-error-overlay");
 // setupOverlay();
+let {getContext, drawLine} = require("./src/paint.js");
 
-let pixelRatio = Math.min(window.devicePixelRatio, 1.5);
+let paintElement = document.getElementById("paint");
+
+
+
+let pixelRatio =  Math.min(window.devicePixelRatio, 1.5);
 const regl = require("regl")({
   pixelRatio,
   extensions: ["OES_texture_float"],
@@ -45,6 +50,9 @@ let frag = shaders.fragment;
 var typedArrayTexture;
 var doPop = false;
 var undoStack = [];
+
+let paintTexture = regl.texture(paintElement);
+
 
 function pushState() {
   var gl = regl._gl;
@@ -166,17 +174,18 @@ let drawTriangle = regl({
     force: regl.prop("force"),
     value: regl.prop("value"),
     point: (context, props) => [
-      props.pointer.texcoordX,
-      props.pointer.texcoordY,
+      props.pointer.x / context.viewportWidth,
+      1. - (props.pointer.y / context.viewportHeight),
     ],
     prevPoint: (context, props) => [
-      props.pointer.prevTexcoordX,
-      props.pointer.prevTexcoordY,
+      props.pointer.prevX / context.viewportWidth,
+     1 -  (props.pointer.prevY /context.viewportHeight),
     ],
     resolution: ({ viewportWidth, viewportHeight }) => [
       viewportWidth,
       viewportHeight,
     ],
+    paintTexture: paintTexture,
     backBuffer: (_, props) =>
       props.pop ? typedArrayTexture : densityDoubleFBO.read,
   },
@@ -208,11 +217,14 @@ regl.frame(function ({ viewportWidth, viewportHeight }) {
       if (!pointer.down) {
         return;
       }
+
+      drawLine(pointer);
+
       pointer.moved = false;
 
       drawTriangle({
         pointer,
-        force: pointer.force || 0.5,
+        force: .5,
         pop: false,
         value: 1,
       });
@@ -232,6 +244,10 @@ regl.frame(function ({ viewportWidth, viewportHeight }) {
   if (undoStack.length == 0) {
     pushState();
   }
+  let ctx = getContext();
+  paintTexture.subimage(ctx);
+
+
   densityDoubleFBO.swap();
 
   drawFboBlurred();

@@ -2,6 +2,7 @@ precision highp float;
 uniform float t;
 uniform vec2 resolution;
 uniform sampler2D backBuffer;
+uniform sampler2D paintTexture;
 uniform vec2 point;
 uniform vec2 prevPoint;
 uniform float force;
@@ -85,6 +86,7 @@ vec4 R(float x, float y)
 
 float wrap(float x, float a, float b)
 {
+  return x;
     return mod(x - a, b - a) + a;
 }
 
@@ -97,20 +99,28 @@ float sdSegment(in vec2 p, in vec2 a, in vec2 b, in float R)
 }
 void main()
 {
+
+    float aspectRatio = resolution.x / resolution.y;
+    vec2 pixel = vec2(1.0) / resolution;
+    vec2 scale = vec2(aspectRatio, 1.0);
+    vec2 vUv = uv * 0.5 + vec2(0.5);
+
+
     init(resolution);
     vec2 fragCoord =( uv * 0.5 + vec2(0.5)) *resolution;
     vec2 iResolution = resolution;
     vec2 dp = 1.0 / iResolution.xy;
     vec2 pos = ( uv * 0.5 + vec2(0.5));
+    vec4 paint = texture2D( paintTexture,vec2(vUv.x, 1.0-vUv.y));
 
     // if (any(greaterThan(pos*Scale, vec2(1.0))))
       // discard;
 
-    const float tileSize = 112.0;
+    const float tileSize = 212.0;
 
     vec2 sz = 1.0 / vec2(Scale);
     float x = pos.x, y = pos.y;
-    vec2 lo = dp * floor(fragCoord / tileSize) * tileSize;
+    vec2 lo =  dp * floor(fragCoord / tileSize) * tileSize;
     vec2 hi = min(lo + tileSize * dp, sz);
     float l = wrap(x - dp.x, lo.x, hi.x), r = wrap(x + dp.x, lo.x, hi.x);
     float u = wrap(y - dp.y, lo.y, hi.y), d = wrap(y + dp.y, lo.y, hi.y);
@@ -125,12 +135,17 @@ void main()
 
     vec4 ds;
     vec2 rulePos = floor((pos.xy / dp)/ tileSize);
-    float ri = mod(rulePos.x + rulePos.y * 4., ruleN);
-    if (ri < 1.0) {
-        ds = rule0(s, p);
+    // float ri = mod(rulePos.x + rulePos.y * 4., ruleN);
+
+    float ri = (paint.r*16.) -0.1;
+    if (ri< 0.0) {
+        ds = vec4(-s*.01)+  (hash43(vec3(fragCoord, t)) - 0.5 )*0.05;
     }
-    else if (ri < 2.0) {
+else if (ri< 1.0) {
         ds = rule1(s, p);
+    }
+    else if (ri <2.0) {
+        ds = rule2(s, p);
     }
     else if (ri < 3.0) {
         ds = rule2(s, p);
@@ -162,20 +177,14 @@ void main()
     else {
         ds = rule11(s, p);
     }
-    // ds = rule10(s,p);
 
     vec4 ncao = clamp(s + ds, -1.5, 1.5);
-
-    float aspectRatio = resolution.x / resolution.y;
-    vec2 pixel = vec2(1.0) / resolution;
-    vec2 scale = vec2(aspectRatio, 1.0);
-    vec2 vUv = uv * 0.5 + vec2(0.5);
 
     vec2 npos = vUv - point.xy;
     npos.x *= aspectRatio;
     float seg = sdSegment(vUv * scale, point.xy * scale, prevPoint.xy * scale,
-        0.05 * (0.2 + force * 0.5));
-    seg = 1.0 - (200. * seg);
+        0.05 * (.15));
+    seg = 1.0 - (50. * seg);
     seg = max(0., seg);
     vec3 base = clamp(texture2D(backBuffer, vUv).xyz, 0., 1.0);
     float n = 0.8;
