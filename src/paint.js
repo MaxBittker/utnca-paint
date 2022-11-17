@@ -3,7 +3,8 @@ let buttons = document.getElementById("buttons");
 let pixelRatio =  Math.min(window.devicePixelRatio, 1.5);
 
 let activeColor = "#011"
-for(var i=0; i<11; i++) {
+const ruleN = 12;
+for(var i=0; i<=ruleN; i++) {
     let nbtn = document.createElement("button");
     nbtn.addEventListener("click",(e)=>{
         activeColor = `#${parseInt(e.target.innerText).toString(16)}11`;
@@ -25,10 +26,11 @@ let ctx = canvas.getContext("2d", { alpha: false });
 // ctx.translate(canvas.width, 0);
 // ctx.scale(-1, 1);
 
-for(var i=0; i<11; i++) {
+for(var i=0; i<=ruleN; i++) {
 
 ctx.beginPath();
 ctx.fillStyle = `#${i.toString(16)}11`;
+console.log(ctx.fillStyle)
 // ctx.fillRect(i*50,window.inner,50,50);
 let w = Math.min(15, (window.innerWidth/4)/12.0);
 ctx.arc(
