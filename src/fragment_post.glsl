@@ -11,13 +11,12 @@ uniform vec2 resolution;
 // clang-format on
 
 // out vec4 fragColor, in vec2 fragCoord
-void main() {
+void main()
+{
 
-  vec2 uv2 = uv.xy;
+    vec2 uv2 = uv.xy;
 
-  vec4 clr = texture2D(tex, uv);
+    vec4 clr = texture2D(tex, uv);
 
-
-    gl_FragColor = vec4(clr.rgb, 1.0) +.5;
-
+    gl_FragColor = vec4(clr.rrr, 1.0) + .5;
 }
