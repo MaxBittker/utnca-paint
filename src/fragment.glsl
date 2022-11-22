@@ -311,13 +311,13 @@ void main()
     float n = 0.8;
     float fill = seg;
 
-    // gl_FragColor = vec4(base + fill * value, 1.0);
+    gl_FragColor = vec4(base + fill * value, 1.0);
     if (value > 0.5) {
-        // if (t == 0. || (fill * value) > 0.05) {
-        // gl_FragColor = hash43(vec3(fragCoord, t)) - 0.5;
-        // } else {
-        gl_FragColor = texture2D(backBuffer, vUv);
-        // }
+        if (t == 0. || (fill * value) > 0.05) {
+            gl_FragColor = hash43(vec3(fragCoord, t)) - 0.5;
+        } else {
+            gl_FragColor = texture2D(backBuffer, vUv);
+        }
     } else {
         gl_FragColor = ncao;
         if (s == vec4(0, 0, 0, 0)) {

@@ -126,7 +126,7 @@ function drawHover(pointer) {
   lastP = pointer;
   hudCtx.clearRect(0, 0, hudC.width, hudC.height);
   hudCtx.strokeStyle = "#fff9";
-  console.log(pointer.x);
+  // hudCtx.fillStyle = "#ffff";
   hudCtx.beginPath();
   hudCtx.arc(
     pointer.x * canvasRatio * scaleX * 2,
