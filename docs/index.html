@@ -4,6 +4,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>noise draw</title>
     <style>
+      html {
+    overflow: hidden;
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    overflow: auto;
+}
       button {
         z-index: 1000;
         width: 70px;
@@ -14,8 +23,10 @@
       }
       button {
         border: 2px solid white !important;
-        width: min(60px, 8vw);
-        height: min(60px, 8vw);
+        width: 60px;
+        height: 60px;
+        /* width: min(60px, 8vw); */
+        /* height: min(60px, 8vw); */
         border-radius: 50%;
         border: 0px;
         padding: 0px;
@@ -37,17 +48,21 @@
       #paint {
         z-index: 4;
         pointer-events: none;
-        /* opacity: 1.5; */
         opacity: 0;
+      }
+      #hud {
+        z-index: 8;
+        pointer-events: none;
       }
       #buttons {
         position: absolute;
         /* z-index: 5; */
-        width: 100%;
-        /* height:80px; */
+        /* width: 100%; */
+        height:100px;
         display: flex;
         flex-direction: row;
-        bottom: 5px;
+        align-items: flex-end;
+        bottom: 2px;
       }
 
       img {
@@ -73,6 +88,7 @@
 
     <!-- <video id="video" loop playsinline autoplay/> -->
     <canvas id="paint"></canvas>
+    <canvas id="hud"></canvas>
     <button id="undo">Undo</button>
     <div id="buttons"></div>
   </body>

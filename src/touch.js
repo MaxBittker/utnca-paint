@@ -1,3 +1,5 @@
+const { drawHover } = require("./paint");
+
 let undo = document.getElementById("undo");
 function setupHandlers(canvas, pixelRatio, pushState, popState) {
   undo.addEventListener("click", (e) => {
@@ -97,9 +99,11 @@ function setupHandlers(canvas, pixelRatio, pushState, popState) {
 
   canvas.addEventListener("mousemove", (e) => {
     let pointer = pointers[0];
-    if (!pointer.down) return;
+    // console.log(e)
     let posX = scaleByPixelRatio(e.offsetX);
     let posY = scaleByPixelRatio(e.offsetY);
+    drawHover({x:posX, y:posY})
+    if (!pointer.down) return;
     queuePointerMoveData(pointer.id, posX, posY);
   });
 
